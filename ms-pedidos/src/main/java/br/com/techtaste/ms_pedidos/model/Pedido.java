@@ -77,4 +77,10 @@ public class Pedido {
     public void setValorTotal(BigDecimal valorTotal) {
         this.valorTotal = valorTotal;
     }
+
+    public void calcularTotal() {
+        this.valorTotal = this.itens.stream()
+                .map(i -> i.getValorUnitario().multiply(BigDecimal.valueOf(i.getQuantidade())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

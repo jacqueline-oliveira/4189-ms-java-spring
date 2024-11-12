@@ -1,5 +1,6 @@
 package br.com.techtaste.ms_pedidos.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +20,7 @@ public class ItemPedido {
     private BigDecimal valorUnitario;
     private Integer quantidade;
     @ManyToOne
+    @JsonIgnore
     private Pedido pedido;
 
     public Long getId() {

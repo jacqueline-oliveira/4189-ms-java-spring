@@ -8,6 +8,10 @@ import br.com.techtaste.ms_pedidos.repository.PedidoRepository;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class PedidoService {
 
@@ -22,9 +26,19 @@ public class PedidoService {
         Pedido pedido = new Pedido();
         BeanUtils.copyProperties(pedidoDto, pedido);
         pedido.setStatus(Status.AGUARDANDO_PAGAMENTO);
+        pedido.setData(LocalDate.now());
         pedido.calcularTotal();
         repository.save(pedido);
         return new PedidoResponseDto(pedido.getId(), pedido.getStatus(),
-                pedido.getCpf(), pedido.getItens(), pedido.getValorTotal());
+                pedido.getCpf(), pedido.getItens(), pedido.getValorTotal(),
+                pedido.getData());
+    }
+
+    public List<PedidoResponseDto> obterTodos() {
+        return repository.findAll().stream()
+                .map(pedido -> new PedidoResponseDto(pedido.getId(), pedido.getStatus(),
+                        pedido.getCpf(), pedido.getItens(), pedido.getValorTotal(),
+                        pedido.getData()))
+                .collect(Collectors.toList());
     }
 }
