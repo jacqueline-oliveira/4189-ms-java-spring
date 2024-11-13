@@ -33,8 +33,8 @@ public class PedidoController {
     }
 
     @GetMapping("/response")
-    public String obterPorta(@Value("${local.server.port") String porta) {
-        return String.format("Resposnta vinda da porta %s", porta);
+    public String obterPorta(@Value("${local.server.port}") String porta) {
+        return String.format("Resposta vinda da porta %s", porta);
 
     }
 }
