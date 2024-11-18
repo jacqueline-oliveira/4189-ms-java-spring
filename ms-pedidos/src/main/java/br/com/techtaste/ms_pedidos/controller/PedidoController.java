@@ -24,9 +24,13 @@ public class PedidoController {
     private PedidoService service;
 
     @PostMapping
-    @CircuitBreaker(name = "verificaAutorizacao")
+    @CircuitBreaker(name = "verificaAutorizacao", fallbackMethod = "erroAoCadastrarPedido")
     public ResponseEntity<PedidoResponseDto> cadastrarPedido(@RequestBody @Valid PedidoRequestDto pedidoDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarPedido(pedidoDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarPedido(pedidoDto, false));
+    }
+
+    public ResponseEntity<PedidoResponseDto> erroAoCadastrarPedido(@RequestBody @Valid PedidoRequestDto pedidoDto, Exception e) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarPedido(pedidoDto, true));
     }
 
     @GetMapping

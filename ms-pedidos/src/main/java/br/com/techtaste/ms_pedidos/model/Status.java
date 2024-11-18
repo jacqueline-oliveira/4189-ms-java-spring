@@ -5,5 +5,6 @@ public enum Status {
     RECUSASDO,
     PREPARANDO,
     SAIU_ENTREGA,
-    ENTREGUE
+    ENTREGUE,
+    ERRO_CONSULTA_PGTO
 }
