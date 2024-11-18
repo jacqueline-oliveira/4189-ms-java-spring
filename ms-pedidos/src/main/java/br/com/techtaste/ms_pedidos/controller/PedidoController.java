@@ -3,6 +3,7 @@ package br.com.techtaste.ms_pedidos.controller;
 import br.com.techtaste.ms_pedidos.dto.PedidoRequestDto;
 import br.com.techtaste.ms_pedidos.dto.PedidoResponseDto;
 import br.com.techtaste.ms_pedidos.service.PedidoService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +24,7 @@ public class PedidoController {
     private PedidoService service;
 
     @PostMapping
+    @CircuitBreaker(name = "verificaAutorizacao")
     public ResponseEntity<PedidoResponseDto> cadastrarPedido(@RequestBody @Valid PedidoRequestDto pedidoDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.cadastrarPedido(pedidoDto));
     }
