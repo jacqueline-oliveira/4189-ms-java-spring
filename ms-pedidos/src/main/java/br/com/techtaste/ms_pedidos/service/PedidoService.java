@@ -1,24 +1,29 @@
 package br.com.techtaste.ms_pedidos.service;
 
+import br.com.techtaste.ms_pedidos.dto.AutorizacaoDto;
 import br.com.techtaste.ms_pedidos.dto.PedidoRequestDto;
 import br.com.techtaste.ms_pedidos.dto.PedidoResponseDto;
 import br.com.techtaste.ms_pedidos.model.Pedido;
 import br.com.techtaste.ms_pedidos.model.Status;
 import br.com.techtaste.ms_pedidos.repository.PedidoRepository;
+import br.com.techtaste.ms_pedidos.utils.PagamentoClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class PedidoService {
 
     private final PedidoRepository repository;
+    private final PagamentoClient pagamentoClient;
 
-    public PedidoService(PedidoRepository repository) {
+    public PedidoService(PedidoRepository repository, PagamentoClient pagamentoClient) {
         this.repository = repository;
+        this.pagamentoClient = pagamentoClient;
     }
 
 
@@ -29,9 +34,19 @@ public class PedidoService {
         pedido.setData(LocalDate.now());
         pedido.calcularTotal();
         repository.save(pedido);
+        Status status = vericaAutorizacao(pedido.getId());
+        pedido.setStatus(status);
+        repository.save(pedido);
         return new PedidoResponseDto(pedido.getId(), pedido.getStatus(),
                 pedido.getCpf(), pedido.getItens(), pedido.getValorTotal(),
                 pedido.getData());
+    }
+
+    private Status vericaAutorizacao(UUID id) {
+       AutorizacaoDto dto = pagamentoClient.obterAutorizacao(id.toString());
+       Status status = dto.status().equalsIgnoreCase("autorizado") ?
+               Status.PREPARANDO : Status.RECUSASDO;
+       return status;
     }
 
     public List<PedidoResponseDto> obterTodos() {
